@@ -44,6 +44,7 @@ class RedisMock extends EventEmitter {
     if (optionsWithDefault.lazyConnect === false) {
       this.connected = true;
       emitConnectEvent(this);
+      this.setStatus('ready');
     }
   }
 
@@ -95,6 +96,11 @@ class RedisMock extends EventEmitter {
     Object.keys(commandsStream).forEach(command => {
       this[command] = commandsStream[command].bind(this);
     });
+  }
+
+  setStatus(status, arg) {
+    this.status = status;
+    process.nextTick(this.emit.bind(this, status, arg));
   }
 }
 RedisMock.prototype.Command = {
